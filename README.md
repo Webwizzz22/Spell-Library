@@ -75,5 +75,6 @@ This is more than an EdTech platform — it's a **magical journey** through the 
 
 1. Clone the repo  
    ```bash
-   git clone https://github.com/your-username/spell-library.git
+   git clone https://github.com/Webwizzz22/Spell-Library.git
    cd spell-library
+   ```
