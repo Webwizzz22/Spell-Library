@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Harry Potter Theme Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* Custom Cursor - Hide system cursor only on interactive elements */
+body, html {
+  font-family: 'Cormorant Garamond', serif;
+  cursor: none !important;
+  overflow-x: hidden;
+}
+
+/* Hide cursor on all elements */
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+/* Ensure no cursor shows on any interactive elements */
+button, a, input, textarea, select, [role="button"], .cursor-pointer {
+  cursor: none !important;
+}
+
+.magic-cursor {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.1s ease;
+}
+
+.magic-cursor.clicking {
+  transform: scale(1.5) rotate(15deg);
+}
+
+.magic-cursor.hovering {
+  transform: scale(1.2);
+}
+
+/* Harry Potter Gold Accents */
+.hp-gold {
+  color: #D4AF37;
+}
+
+.hp-gold-bg {
+  background-color: #D4AF37;
+}
+
+.hp-crimson {
+  color: #DC143C;
+}
+
+.hp-emerald {
+  color: #50C878;
+}
+
+.hp-sapphire {
+  color: #0F52BA;
+}
+
+.hp-bronze {
+  color: #CD7F32;
+}
+
+/* Magical Text Effects */
+.magical-text {
+  background: linear-gradient(45deg, #D4AF37, #FFD700, #D4AF37);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Hogwarts Houses Theme */
+.gryffindor-theme {
+  background: linear-gradient(135deg, #740001, #D3A625, #EEBA30);
+}
+
+.slytherin-theme {
+  background: linear-gradient(135deg, #1A472A, #2A623D, #5D5D5D);
+}
+
+.hufflepuff-theme {
+  background: linear-gradient(135deg, #FFDB00, #000000, #F0C75E);
+}
+
+.ravenclaw-theme {
+  background: linear-gradient(135deg, #0E1A40, #946B2D, #5D5D5D);
+}
+
+/* Performance optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.gpu-acceleration {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize animations for better performance */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Additional Harry Potter themed optimizations */
+.hp-particle-canvas {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+}
