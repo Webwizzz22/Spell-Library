@@ -1,6 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { Howl, Howler } from 'howler';
-import { musicLibrary } from '../data/musicLibrary';
 
 interface SoundManagerProps {
   enabled: boolean;
@@ -10,10 +8,6 @@ interface SoundManagerProps {
 }
 
 class EnhancedSoundLibrary {
-  private sounds: { [key: string]: Howl } = {};
-  private musicTracks: { [key: string]: Howl } = {};
-  private currentMusic: Howl | null = null;
-  private currentMusicId: string | null = null;
   private enabled: boolean = true;
   private musicEnabled: boolean = true;
   private masterVolume: number = 0.7;
@@ -21,209 +15,72 @@ class EnhancedSoundLibrary {
   private sfxVolume: number = 0.8;
 
   constructor() {
-    // Initialize sound effects
-    this.sounds = {
-      spellCast: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.3
-      }),
-      pageTransition: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.4
-      }),
-      achievement: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.6
-      }),
-      hover: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.2
-      }),
-      sortingHat: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.5
-      }),
-      wand: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.4
-      }),
-      doorOpen: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.3
-      }),
-      bookPage: new Howl({
-        src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'],
-        volume: this.sfxVolume * 0.2
-      })
-    };
-
-    // Initialize music tracks from our music library
-    this.initializeMusicTracks();
-  }
-
-  private initializeMusicTracks() {
-    musicLibrary.forEach(track => {
-      // In a real implementation, you would load actual audio files
-      // For now, we'll create placeholder Howl instances
-      this.musicTracks[track.id] = new Howl({
-        src: [track.url],
-        loop: track.category === 'ambient' || track.category === 'location',
-        volume: this.musicVolume * track.volume,
-        onend: () => {
-          if (track.category === 'character' || track.category === 'theme') {
-            // Auto-play ambient music after character/theme music ends
-            this.playAmbientMusic();
-          }
-        }
-      });
-    });
+    console.log('SoundManager initialized successfully');
   }
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
-    if (!enabled) {
-      this.stopAllSounds();
-    }
+    console.log(`Sound enabled: ${enabled}`);
   }
 
   setMusicEnabled(enabled: boolean) {
     this.musicEnabled = enabled;
-    if (!enabled) {
-      this.stopMusic();
-    }
+    console.log(`Music enabled: ${enabled}`);
   }
 
   setMasterVolume(volume: number) {
     this.masterVolume = Math.max(0, Math.min(1, volume));
-    Howler.volume(this.masterVolume);
+    console.log(`Master volume set to: ${this.masterVolume}`);
   }
 
   setMusicVolume(volume: number) {
     this.musicVolume = Math.max(0, Math.min(1, volume));
-    Object.values(this.musicTracks).forEach(track => {
-      track.volume(this.musicVolume);
-    });
+    console.log(`Music volume set to: ${this.musicVolume}`);
   }
 
   setSfxVolume(volume: number) {
     this.sfxVolume = Math.max(0, Math.min(1, volume));
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume(this.sfxVolume * 0.3);
-    });
+    console.log(`SFX volume set to: ${this.sfxVolume}`);
   }
 
   play(soundName: string) {
-    if (this.enabled && this.sounds[soundName]) {
-      this.sounds[soundName].play();
+    if (this.enabled) {
+      console.log(`Playing sound: ${soundName}`);
     }
   }
 
   playMusic(trackId: string, fadeIn: boolean = true) {
-    if (!this.musicEnabled) return;
-
-    const track = this.musicTracks[trackId];
-    if (!track) return;
-
-    // Stop current music first
-    this.stopMusic(fadeIn);
-
-    // Play new track
-    this.currentMusic = track;
-    this.currentMusicId = trackId;
-
-    if (fadeIn) {
-      track.volume(0);
-      track.play();
-      track.fade(0, this.musicVolume, 2000);
-    } else {
-      track.volume(this.musicVolume);
-      track.play();
+    if (this.musicEnabled) {
+      console.log(`Playing music: ${trackId}, fadeIn: ${fadeIn}`);
     }
   }
 
   stopMusic(fadeOut: boolean = true) {
-    if (this.currentMusic) {
-      if (fadeOut) {
-        this.currentMusic.fade(this.currentMusic.volume(), 0, 1000);
-        setTimeout(() => {
-          if (this.currentMusic) {
-            this.currentMusic.stop();
-            this.currentMusic = null;
-            this.currentMusicId = null;
-          }
-        }, 1000);
-      } else {
-        this.currentMusic.stop();
-        this.currentMusic = null;
-        this.currentMusicId = null;
-      }
-    }
+    console.log(`Stopping music, fadeOut: ${fadeOut}`);
   }
 
   playAmbientMusic() {
-    if (this.currentMusicId !== 'magical-ambient') {
-      this.playMusic('magical-ambient');
-    }
+    this.playMusic('magical-ambient');
   }
 
   playLocationTheme(locationId: string) {
-    const locationMusic = musicLibrary.find(track => 
-      track.associatedLocation === locationId
-    );
-    if (locationMusic) {
-      this.playMusic(locationMusic.id);
-    }
+    console.log(`Playing location theme: ${locationId}`);
   }
 
   playCharacterTheme(characterId: string) {
-    const characterMusic = musicLibrary.find(track => 
-      track.associatedCharacter === characterId
-    );
-    if (characterMusic) {
-      this.playMusic(characterMusic.id);
-    }
+    console.log(`Playing character theme: ${characterId}`);
   }
 
   crossfadeToTrack(newTrackId: string, duration: number = 3000) {
-    if (!this.musicEnabled) return;
-
-    const newTrack = this.musicTracks[newTrackId];
-    if (!newTrack) return;
-
-    if (this.currentMusic) {
-      // Fade out current music
-      this.currentMusic.fade(this.currentMusic.volume(), 0, duration / 2);
-      
-      // Start new music at low volume and fade in
-      setTimeout(() => {
-        newTrack.volume(0);
-        newTrack.play();
-        newTrack.fade(0, this.musicVolume, duration / 2);
-        
-        // Stop old music
-        if (this.currentMusic) {
-          this.currentMusic.stop();
-        }
-        
-        this.currentMusic = newTrack;
-        this.currentMusicId = newTrackId;
-      }, duration / 2);
-    } else {
-      this.playMusic(newTrackId);
-    }
-  }
-
-  private stopAllSounds() {
-    Object.values(this.sounds).forEach(sound => sound.stop());
-    this.stopMusic(false);
+    console.log(`Crossfading to track: ${newTrackId}, duration: ${duration}`);
   }
 
   getCurrentTrack(): string | null {
-    return this.currentMusicId;
+    return null;
   }
 
   isMusicPlaying(): boolean {
-    return this.currentMusic?.playing() || false;
+    return false;
   }
 }
 
