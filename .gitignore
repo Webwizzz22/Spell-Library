@@ -117,12 +117,6 @@ Desktop.ini
 *.tsbuildinfo
 next-env.d.ts
 
-# PWA files
-**/public/sw.js
-**/public/workbox-*.js
-**/public/worker-*.js
-**/public/fallback-*.js
-
 # Testing
 coverage/
 .jest-cache/
@@ -130,9 +124,6 @@ coverage/
 
 # ESLint
 .eslintcache
-
-# Prettier
-.prettierignore
 
 # Stylelint
 .stylelintcache
@@ -172,6 +163,3 @@ prisma/migrations/*/migration.sql
 test-results/
 playwright-report/
 playwright/.cache/
-
-# MSW
-public/mockServiceWorker.js

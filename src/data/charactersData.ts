@@ -477,7 +477,7 @@ export const charactersData: Character[] = [
     quotes: [
       "Always.",
       "Turn to page 394.",
-      "You have your mother\'s eyes."
+      "You have your mother's eyes."
     ],
     facts: [
       'Created many spells including Sectumsempra',
@@ -555,9 +555,9 @@ export const charactersData: Character[] = [
     description: 'Keeper of Keys and Grounds at Hogwarts, half-giant with a love for magical creatures.',
     imageUrl: '/images/characters/rubeus-hagrid.jpg',
     quotes: [
-      "You\'re a wizard, Harry!",
-      "I shouldn\'t have said that. I should not have said that.",
-      "What\'s comin\' will come, an\' we\'ll meet it when it does."
+      "You're a wizard, Harry!",
+      "I shouldn't have said that. I should not have said that.",
+      "What's comin' will come, an' we'll meet it when it does."
     ],
     facts: [
       'Half-giant',

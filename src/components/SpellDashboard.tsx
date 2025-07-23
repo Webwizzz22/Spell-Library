@@ -1,4 +1,26 @@
+'use client';
+
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Lock, Star, Zap, BookOpen, Code, Layout, Palette, Clock, Award, TrendingUp } from 'lucide-react';
+import type { User, SpellProgress, Spell } from '../types';
+import { spellsData } from '../data/spellsData';
+import { soundLibrary } from './SoundManager';
+
+interface SpellDashboardProps {
+  user: User;
+  userProgress: SpellProgress[];
+}
+
+const SpellDashboard: React.FC<SpellDashboardProps> = ({ user, userProgress }) => {
+  if (!user) return null;
+
+  const getSpellProgress = (spellId: string) => {
+    return userProgress.find(p => p.spellId === spellId);
+  };
+
+  const isSpellUnlocked = (spell: Spell, index: number) => {eact from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Star, Zap, BookOpen, Code, Layout, Palette, Clock, Award, TrendingUp } from 'lucide-react';

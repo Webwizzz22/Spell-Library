@@ -1,14 +1,12 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, BookOpen, Wand2, Star, Users as UsersIcon } from 'lucide-react';
 import { charactersData, Character, searchCharacters } from '../data/charactersData';
 import { enhancedSoundLibrary } from './SoundManager';
 
-interface CharactersProps {
-  // Component doesn't need user prop for now
-}
-
-const Characters: React.FC<CharactersProps> = () => {
+const Characters: React.FC = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedHouse, setSelectedHouse] = useState<string>('all');

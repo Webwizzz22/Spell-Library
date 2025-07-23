@@ -73,35 +73,6 @@ function App() {
     setIsLoading(false);
   };
 
-  const getHouseColors = () => {
-    if (!user) return undefined;
-    
-    const houseColorMap = {
-      gryffindor: {
-        primary: '#740001',
-        secondary: '#D3A625',
-        accent: '#FFD700'
-      },
-      hufflepuff: {
-        primary: '#ECB939',
-        secondary: '#372E29',
-        accent: '#FFEB3B'
-      },
-      ravenclaw: {
-        primary: '#0E1A40',
-        secondary: '#946B2D',
-        accent: '#2196F3'
-      },
-      slytherin: {
-        primary: '#1A472A',
-        secondary: '#AAAAAA',
-        accent: '#4CAF50'
-      }
-    };
-
-    return houseColorMap[user.house];
-  };
-
   const getHouseTheme = (): 'gryffindor' | 'slytherin' | 'hufflepuff' | 'ravenclaw' | 'mystical' => {
     return user?.house || 'mystical';
   };

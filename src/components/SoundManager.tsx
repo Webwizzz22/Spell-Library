@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useRef } from 'react';
 
 interface SoundManagerProps {
@@ -13,28 +15,46 @@ class EnhancedSoundLibrary {
   private masterVolume: number = 0.7;
   private musicVolume: number = 0.5;
   private sfxVolume: number = 0.8;
+  private audioContext: AudioContext | null = null;
+  private currentMusic: HTMLAudioElement | null = null;
+  private soundCache: Map<string, HTMLAudioElement> = new Map();
 
   constructor() {
-    console.log('SoundManager initialized successfully');
+    try {
+      // Initialize audio context safely
+      if (typeof window !== 'undefined') {
+        console.log('SoundManager initialized successfully');
+      }
+    } catch {
+      console.warn('Audio context not supported, running in silent mode');
+    }
   }
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
+    if (!enabled && this.currentMusic) {
+      this.currentMusic.pause();
+    }
     console.log(`Sound enabled: ${enabled}`);
   }
 
   setMusicEnabled(enabled: boolean) {
     this.musicEnabled = enabled;
+    if (!enabled && this.currentMusic) {
+      this.currentMusic.pause();
+    }
     console.log(`Music enabled: ${enabled}`);
   }
 
   setMasterVolume(volume: number) {
     this.masterVolume = Math.max(0, Math.min(1, volume));
+    this.updateVolumes();
     console.log(`Master volume set to: ${this.masterVolume}`);
   }
 
   setMusicVolume(volume: number) {
     this.musicVolume = Math.max(0, Math.min(1, volume));
+    this.updateVolumes();
     console.log(`Music volume set to: ${this.musicVolume}`);
   }
 
@@ -43,20 +63,77 @@ class EnhancedSoundLibrary {
     console.log(`SFX volume set to: ${this.sfxVolume}`);
   }
 
+  private updateVolumes() {
+    if (this.currentMusic) {
+      this.currentMusic.volume = this.masterVolume * this.musicVolume;
+    }
+  }
+
+  private createSafeAudio(src?: string): HTMLAudioElement | null {
+    try {
+      if (!src || !this.enabled) return null;
+      
+      const audio = new Audio();
+      audio.preload = 'none';
+      audio.volume = this.masterVolume * this.sfxVolume;
+      
+      // Only set src if it's a valid URL or path
+      if (src.startsWith('http') || src.startsWith('/') || src.startsWith('./')) {
+        audio.src = src;
+      }
+      
+      return audio;
+    } catch (error) {
+      console.warn('Failed to create audio element:', error);
+      return null;
+    }
+  }
+
   play(soundName: string) {
-    if (this.enabled) {
-      console.log(`Playing sound: ${soundName}`);
+    if (!this.enabled) return;
+    
+    try {
+      // Create a simple beep or use existing cached sounds
+      const cachedSound = this.soundCache.get(soundName);
+      if (cachedSound) {
+        cachedSound.currentTime = 0;
+        cachedSound.play().catch(() => {
+          // Silently fail if audio can't play
+        });
+      } else {
+        console.log(`Playing sound: ${soundName}`);
+      }
+    } catch (error) {
+      console.warn(`Failed to play sound ${soundName}:`, error);
     }
   }
 
   playMusic(trackId: string, fadeIn: boolean = true) {
-    if (this.musicEnabled) {
+    if (!this.musicEnabled || !this.enabled) return;
+    
+    try {
+      // Stop current music
+      if (this.currentMusic) {
+        this.currentMusic.pause();
+        this.currentMusic = null;
+      }
+      
       console.log(`Playing music: ${trackId}, fadeIn: ${fadeIn}`);
+    } catch (error) {
+      console.warn(`Failed to play music ${trackId}:`, error);
     }
   }
 
   stopMusic(fadeOut: boolean = true) {
-    console.log(`Stopping music, fadeOut: ${fadeOut}`);
+    try {
+      if (this.currentMusic) {
+        this.currentMusic.pause();
+        this.currentMusic = null;
+      }
+      console.log(`Stopping music, fadeOut: ${fadeOut}`);
+    } catch (error) {
+      console.warn('Failed to stop music:', error);
+    }
   }
 
   playAmbientMusic() {
@@ -80,7 +157,7 @@ class EnhancedSoundLibrary {
   }
 
   isMusicPlaying(): boolean {
-    return false;
+    return this.currentMusic !== null && !this.currentMusic.paused;
   }
 }
 

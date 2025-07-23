@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +13,12 @@ import {
   Lightbulb,
   Sparkles
 } from 'lucide-react';
-import { harryPotterSpells } from '../data/harryPotterSpells';
+import { harryPotterSpells, HarryPotterSpell } from '../data/harryPotterSpells';
 import { enhancedSoundLibrary } from './SoundManager';
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
-  const [currentSpell, setCurrentSpell] = useState<any>(null);
+  const [currentSpell, setCurrentSpell] = useState<HarryPotterSpell | null>(null);
   const [userGuess, setUserGuess] = useState('');
   const [gameState, setGameState] = useState<'playing' | 'correct' | 'incorrect'>('playing');
   const [score, setScore] = useState(0);
@@ -96,7 +98,7 @@ const NotFound: React.FC = () => {
   useEffect(() => {
     // Start with a random spell when component mounts
     startNewRound();
-  }, []);
+  }, [startNewRound]);
 
   const getAccuracy = () => {
     if (attempts === 0) return 0;

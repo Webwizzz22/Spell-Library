@@ -1,39 +1,61 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useUser } from '@clerk/clerk-react';
 import LandingPage from './components/LandingPage';
 import SpellDashboard from './components/SpellDashboard';
 import SpellLesson from './components/SpellLesson';
 import Spellbook from './components/Spellbook';
-import Characters from './components/Characters';
 import EnhancedCharacters from './components/EnhancedCharacters';
 import Journey from './components/Journey';
 import NotFound from './components/NotFound';
 import EnhancedNavbar from './components/EnhancedNavbar';
-import EnhancedLoadingScreen from './components/EnhancedLoadingScreen';
 import SimpleLoadingScreen from './components/SimpleLoadingScreen';
 import OptimizedMagicalParticles from './components/OptimizedMagicalParticles';
 import MagicCursor from './components/MagicCursor';
-import PageTransition from './components/PageTransition';
 import SoundManager from './components/SoundManager';
 import { User, SpellProgress } from './types';
 
 function App() {
+  const { user: clerkUser, isLoaded } = useUser();
   const [user, setUser] = useState<User | null>(null);
   const [userProgress, setUserProgress] = useState<SpellProgress[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load user data from localStorage
-    const savedUser = localStorage.getItem('spellAcademiaUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (!isLoaded) return;
 
-    const savedProgress = localStorage.getItem('spellAcademiaProgress');
-    if (savedProgress) {
-      setUserProgress(JSON.parse(savedProgress));
+    // If user is signed in with Clerk, create or load their SpellAcademia profile
+    if (clerkUser) {
+      const savedUser = localStorage.getItem(`spellAcademia_${clerkUser.id}`);
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      } else {
+        // Create new SpellAcademia profile for Clerk user
+        const newUser: User = {
+          id: clerkUser.id,
+          name: clerkUser.firstName || clerkUser.username || 'Young Wizard',
+          house: 'gryffindor', // Default house, will be changed by sorting hat
+          level: 1,
+          totalXP: 0,
+          joinedAt: new Date(),
+          discoveredSpells: [],
+          favoriteCharacters: [],
+          visitedLocations: [],
+        };
+        setUser(newUser);
+        localStorage.setItem(`spellAcademia_${clerkUser.id}`, JSON.stringify(newUser));
+      }
+
+      const savedProgress = localStorage.getItem(`spellAcademiaProgress_${clerkUser.id}`);
+      if (savedProgress) {
+        setUserProgress(JSON.parse(savedProgress));
+      }
+    } else {
+      // User is signed out
+      setUser(null);
+      setUserProgress([]);
     }
 
     const savedSoundPreference = localStorage.getItem('spellAcademiaSoundEnabled');
@@ -44,26 +66,26 @@ function App() {
     // Simulate loading time for enhanced experience
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [clerkUser, isLoaded]);
 
   const saveUserProgress = (progress: SpellProgress[]) => {
+    if (!clerkUser || !user) return;
+    
     setUserProgress(progress);
-    localStorage.setItem('spellAcademiaProgress', JSON.stringify(progress));
+    localStorage.setItem(`spellAcademiaProgress_${clerkUser.id}`, JSON.stringify(progress));
     
     // Update user XP and level
-    if (user) {
-      const totalXP = progress
-        .filter(p => p.completed)
-        .reduce((sum, p) => sum + (p.xpEarned || 0), 0);
-      
-      const newLevel = Math.floor(totalXP / 500) + 1;
-      const updatedUser = { ...user, totalXP, level: newLevel };
-      setUser(updatedUser);
-      localStorage.setItem('spellAcademiaUser', JSON.stringify(updatedUser));
-    }
+    const totalXP = progress
+      .filter(p => p.completed)
+      .reduce((sum, p) => sum + (p.xpEarned || 0), 0);
+    
+    const newLevel = Math.floor(totalXP / 500) + 1;
+    const updatedUser = { ...user, totalXP, level: newLevel };
+    setUser(updatedUser);
+    localStorage.setItem(`spellAcademia_${clerkUser.id}`, JSON.stringify(updatedUser));
   };
 
   const handleSoundToggle = (enabled: boolean) => {
@@ -75,55 +97,25 @@ function App() {
     setIsLoading(false);
   };
 
-  const getHouseColors = () => {
-    if (!user) return undefined;
-    
-    const houseColorMap = {
-      gryffindor: {
-        primary: '#740001',
-        secondary: '#D3A625',
-        accent: '#FFD700'
-      },
-      hufflepuff: {
-        primary: '#ECB939',
-        secondary: '#372E29',
-        accent: '#FFEB3B'
-      },
-      ravenclaw: {
-        primary: '#0E1A40',
-        secondary: '#946B2D',
-        accent: '#2196F3'
-      },
-      slytherin: {
-        primary: '#1A472A',
-        secondary: '#AAAAAA',
-        accent: '#4CAF50'
-      }
-    };
-
-    return houseColorMap[user.house];
-  };
-
-  if (isLoading) {
+  if (isLoading || !isLoaded) {
     return <SimpleLoadingScreen onLoadingComplete={handleLoadingComplete} />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-950 relative overflow-hidden">
-      {/* Magic Cursor - Always visible */}
+      {/* Magic Cursor - Always visible but optimized */}
       <MagicCursor theme={user?.house || 'default'} />
       
-      {/* Enhanced Magical Background */}
+      {/* Ultra-minimal Magical Background for optimal performance */}
       <OptimizedMagicalParticles 
-        count={user ? 20 : 30}
+        count={user ? 3 : 5}
         theme={user ? user.house : 'mystical'}
         intensity="light"
       />
       
-      {/* Additional atmospheric elements */}
+      {/* Simplified atmospheric elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-purple-900/10 to-transparent"></div>
-        <div className="absolute inset-0 bg-[url('/images/hogwarts-silhouette.svg')] bg-bottom bg-no-repeat bg-contain opacity-5"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/5 to-black/20"></div>
       </div>
 
       <SoundManager enabled={soundEnabled} />
@@ -137,19 +129,20 @@ function App() {
           />
         )}
         
-        <PageTransition>
-          <AnimatePresence mode="wait">
-            <Routes>
+        <AnimatePresence mode="wait">
+          <Routes>
               <Route 
                 path="/" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <Navigate to="/dashboard" replace />
                   ) : (
                     <LandingPage 
                       onEnterAcademy={(newUser) => {
                         setUser(newUser);
-                        localStorage.setItem('spellAcademiaUser', JSON.stringify(newUser));
+                        if (clerkUser) {
+                          localStorage.setItem(`spellAcademia_${clerkUser.id}`, JSON.stringify(newUser));
+                        }
                       }} 
                     />
                   )
@@ -159,7 +152,7 @@ function App() {
               <Route 
                 path="/dashboard" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <SpellDashboard 
                       user={user} 
                       userProgress={userProgress}
@@ -173,7 +166,7 @@ function App() {
               <Route 
                 path="/characters" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <EnhancedCharacters />
                   ) : (
                     <Navigate to="/" replace />
@@ -184,7 +177,7 @@ function App() {
               <Route 
                 path="/journey" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <Journey 
                       user={user} 
                       userProgress={userProgress}
@@ -198,7 +191,7 @@ function App() {
               <Route 
                 path="/spell/:spellId" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <SpellLesson 
                       user={user} 
                       userProgress={userProgress}
@@ -213,7 +206,7 @@ function App() {
               <Route 
                 path="/spellbook" 
                 element={
-                  user ? (
+                  clerkUser && user ? (
                     <Spellbook 
                       user={user} 
                       userProgress={userProgress} 
@@ -228,8 +221,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>
-        </PageTransition>
-      </Router>
+        </Router>
     </div>
   );
 }

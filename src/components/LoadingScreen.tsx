@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -5,43 +7,43 @@ interface LoadingScreenProps {
   onLoadingComplete: () => void;
 }
 
+const spellSequence = [
+  {
+    spell: 'Alohomora',
+    description: 'Unlocking the mysteries of the wizarding world...',
+    effect: '🔓',
+    duration: 2000
+  },
+  {
+    spell: 'Lumos',
+    description: 'Illuminating the path to Hogwarts...',
+    effect: '💡',
+    duration: 1800
+  },
+  {
+    spell: 'Expecto Patronum',
+    description: 'Summoning magical protections...',
+    effect: '🦌',
+    duration: 2200
+  },
+  {
+    spell: 'Wingardium Leviosa',
+    description: 'Levitating magical elements...',
+    effect: '🪶',
+    duration: 1600
+  },
+  {
+    spell: 'Accio',
+    description: 'Gathering wizarding knowledge...',
+    effect: '📚',
+    duration: 1800
+  }
+];
+
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
   const [currentSpell, setCurrentSpell] = useState(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState<'spells' | 'scenes' | 'complete'>('spells');
-
-  const spellSequence = [
-    {
-      spell: 'Alohomora',
-      description: 'Unlocking the mysteries of the wizarding world...',
-      effect: '🔓',
-      duration: 2000
-    },
-    {
-      spell: 'Lumos',
-      description: 'Illuminating the path to Hogwarts...',
-      effect: '💡',
-      duration: 1800
-    },
-    {
-      spell: 'Expecto Patronum',
-      description: 'Summoning magical protections...',
-      effect: '🦌',
-      duration: 2200
-    },
-    {
-      spell: 'Wingardium Leviosa',
-      description: 'Levitating magical elements...',
-      effect: '🪶',
-      duration: 1600
-    },
-    {
-      spell: 'Accio',
-      description: 'Gathering wizarding knowledge...',
-      effect: '📚',
-      duration: 1800
-    }
-  ];
 
   const movieScenes = [
     {
@@ -105,7 +107,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
       
     }, totalSpellTime);
 
-  }, [onLoadingComplete]);
+  }, [onLoadingComplete, spellSequence]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-slate-900 via-purple-900 to-indigo-950 flex items-center justify-center z-50 overflow-hidden">

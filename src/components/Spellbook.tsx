@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Star, Clock, Award, TrendingUp, Target, Zap, Trophy } from 'lucide-react';
@@ -20,8 +22,6 @@ const Spellbook: React.FC<SpellbookProps> = ({ user, userProgress }) => {
   const averageScore = userProgress.length > 0 
     ? Math.round(userProgress.reduce((sum, p) => sum + p.score, 0) / userProgress.length)
     : 0;
-
-  const totalAttempts = userProgress.reduce((sum, p) => sum + p.attempts, 0);
 
   const getSpellsByDifficulty = (difficulty: string) => {
     return completedSpells.filter(progress => {
@@ -64,8 +64,6 @@ const Spellbook: React.FC<SpellbookProps> = ({ user, userProgress }) => {
       rarity: 'rare'
     }
   ];
-
-  const unlockedAchievements = achievements.filter(a => a.unlocked);
 
   return (
     <div className="pt-24 pb-12 px-4 max-w-7xl mx-auto">

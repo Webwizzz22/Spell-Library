@@ -1,0 +1,32 @@
+/* Cursor optimizations */
+.magic-cursor {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.magic-cursor-glow {
+  background: radial-gradient(circle, var(--cursor-color) 0%, transparent 70%);
+  opacity: 0.2;
+  animation: ping 0.3s ease-out;
+}
+
+/* Performance optimizations */
+.particles-canvas {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Reduced motion for better performance */
+@media (prefers-reduced-motion: reduce) {
+  .magic-cursor {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .particles-canvas {
+    display: none;
+  }
+}

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useRef, useCallback } from 'react';
 
 interface OptimizedMagicalParticlesProps {
@@ -20,7 +22,7 @@ interface Particle {
 }
 
 const OptimizedMagicalParticles: React.FC<OptimizedMagicalParticlesProps> = ({
-  count = 20,
+  count = 10, // Reduced default count
   theme = 'mystical',
   intensity = 'light'
 }) => {
@@ -28,6 +30,30 @@ const OptimizedMagicalParticles: React.FC<OptimizedMagicalParticlesProps> = ({
   const animationRef = useRef<number>();
   const particlesRef = useRef<Particle[]>([]);
   const lastTimeRef = useRef<number>(0);
+  const isVisibleRef = useRef<boolean>(true);
+
+  // Use Intersection Observer to pause when not visible
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+        if (!entry.isIntersecting && animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+          animationRef.current = undefined;
+        } else if (entry.isIntersecting && !animationRef.current) {
+          lastTimeRef.current = performance.now();
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
 
   const getThemeConfig = useCallback(() => {
     switch (theme) {
@@ -67,13 +93,13 @@ const OptimizedMagicalParticles: React.FC<OptimizedMagicalParticlesProps> = ({
   const getIntensitySettings = useCallback(() => {
     switch (intensity) {
       case 'light':
-        return { speed: 0.2, size: 1.2, opacity: 0.3, fps: 30 };
+        return { speed: 0.05, size: 0.6, opacity: 0.15, fps: 15 }; // Reduced values
       case 'medium':
-        return { speed: 0.4, size: 1.8, opacity: 0.5, fps: 45 };
+        return { speed: 0.1, size: 0.8, opacity: 0.2, fps: 20 };
       case 'heavy':
-        return { speed: 0.6, size: 2.2, opacity: 0.7, fps: 60 };
+        return { speed: 0.15, size: 1.0, opacity: 0.25, fps: 30 };
       default:
-        return { speed: 0.2, size: 1.2, opacity: 0.3, fps: 30 };
+        return { speed: 0.05, size: 0.6, opacity: 0.15, fps: 15 };
     }
   }, [intensity]);
 
@@ -90,7 +116,7 @@ const OptimizedMagicalParticles: React.FC<OptimizedMagicalParticlesProps> = ({
       speedY: (Math.random() - 0.5) * intensitySettings.speed,
       opacity: Math.random() * intensitySettings.opacity,
       color: themeConfig.colors[Math.floor(Math.random() * themeConfig.colors.length)],
-      type: particleTypes[Math.floor(Math.random() * particleTypes.length)] as any,
+      type: particleTypes[Math.floor(Math.random() * particleTypes.length)] as 'wand' | 'snitch' | 'feather' | 'hogwarts-letter' | 'lightning' | 'potion-bubble',
       rotation: Math.random() * 360,
       rotationSpeed: (Math.random() - 0.5) * 1.5
     };
@@ -284,11 +310,7 @@ const OptimizedMagicalParticles: React.FC<OptimizedMagicalParticlesProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 will-change-transform"
-      style={{ 
-        background: 'transparent',
-        mixBlendMode: 'screen'
-      }}
+      className="fixed inset-0 pointer-events-none z-0 particles-canvas bg-transparent"
     />
   );
 };

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wand2, Sparkles, Crown, Castle } from 'lucide-react';
@@ -6,69 +8,69 @@ interface EnhancedLoadingScreenProps {
   onLoadingComplete: () => void;
 }
 
+const spellSequence = [
+  {
+    spell: 'Alohomora',
+    description: 'Unlocking the mysteries of the wizarding world...',
+    effect: '🔓',
+    color: '#FFD700',
+    wandMovement: 'flick',
+    duration: 2000,
+    particles: ['✨', '🔑', '💫']
+  },
+  {
+    spell: 'Lumos',
+    description: 'Illuminating the path to Hogwarts...',
+    effect: '💡',
+    color: '#F0E68C',
+    wandMovement: 'raise',
+    duration: 1800,
+    particles: ['💡', '⭐', '✨']
+  },
+  {
+    spell: 'Expecto Patronum',
+    description: 'Summoning magical protections...',
+    effect: '🦌',
+    color: '#87CEEB',
+    wandMovement: 'circle',
+    duration: 2200,
+    particles: ['🦌', '🐺', '🦅', '💫']
+  },
+  {
+    spell: 'Wingardium Leviosa',
+    description: 'Levitating magical elements...',
+    effect: '🪶',
+    color: '#DDA0DD',
+    wandMovement: 'swish',
+    duration: 1600,
+    particles: ['🪶', '📚', '✨']
+  },
+  {
+    spell: 'Accio',
+    description: 'Gathering wizarding knowledge...',
+    effect: '📚',
+    color: '#98FB98',
+    wandMovement: 'point',
+    duration: 1800,
+    particles: ['📚', '📜', '💫', '⚡']
+  },
+  {
+    spell: 'Protego',
+    description: 'Establishing magical defenses...',
+    effect: '🛡️',
+    color: '#4169E1',
+    wandMovement: 'shield',
+    duration: 1900,
+    particles: ['🛡️', '⚡', '✨']
+  }
+];
+
 const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({ onLoadingComplete }) => {
   const [currentSpell, setCurrentSpell] = useState(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState<'spells' | 'scenes' | 'complete'>('spells');
   const [spellCastingActive, setSpellCastingActive] = useState(false);
   const [wandGlow, setWandGlow] = useState(false);
-
-  const spellSequence = [
-    {
-      spell: 'Alohomora',
-      description: 'Unlocking the mysteries of the wizarding world...',
-      effect: '🔓',
-      color: '#FFD700',
-      wandMovement: 'flick',
-      duration: 2000,
-      particles: ['✨', '🔑', '💫']
-    },
-    {
-      spell: 'Lumos',
-      description: 'Illuminating the path to Hogwarts...',
-      effect: '💡',
-      color: '#F0E68C',
-      wandMovement: 'raise',
-      duration: 1800,
-      particles: ['💡', '⭐', '✨']
-    },
-    {
-      spell: 'Expecto Patronum',
-      description: 'Summoning magical protections...',
-      effect: '🦌',
-      color: '#87CEEB',
-      wandMovement: 'circle',
-      duration: 2200,
-      particles: ['🦌', '🐺', '🦅', '💫']
-    },
-    {
-      spell: 'Wingardium Leviosa',
-      description: 'Levitating magical elements...',
-      effect: '🪶',
-      color: '#DDA0DD',
-      wandMovement: 'swish',
-      duration: 1600,
-      particles: ['🪶', '📚', '✨']
-    },
-    {
-      spell: 'Accio',
-      description: 'Gathering wizarding knowledge...',
-      effect: '📚',
-      color: '#98FB98',
-      wandMovement: 'point',
-      duration: 1800,
-      particles: ['📚', '📜', '💫', '⚡']
-    },
-    {
-      spell: 'Protego',
-      description: 'Establishing magical defenses...',
-      effect: '🛡️',
-      color: '#4169E1',
-      wandMovement: 'shield',
-      duration: 1900,
-      particles: ['🛡️', '⚡', '✨']
-    }
-  ];
 
   const movieScenes = [
     {
@@ -166,7 +168,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({ onLoading
     return () => {
       clearInterval(spellInterval);
     };
-  }, [onLoadingComplete]);
+  }, [onLoadingComplete, spellSequence]);
 
   const currentSpellData = spellSequence[currentSpell];
 

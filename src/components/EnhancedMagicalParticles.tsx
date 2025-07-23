@@ -1,5 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+'use client';
+
+import React, { useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
+
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+  hue: number;
+}
 
 interface MagicalParticlesProps {
   count?: number;
@@ -22,9 +34,9 @@ const MagicalParticles: React.FC<MagicalParticlesProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const particlesRef = useRef<any[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
 
-  const getThemeColors = () => {
+  const getThemeColors = useCallback(() => {
     switch (theme) {
       case 'golden':
         return ['#FFD700', '#FFA500', '#FFEB3B', '#FF8F00', '#FFC107'];
@@ -39,9 +51,9 @@ const MagicalParticles: React.FC<MagicalParticlesProps> = ({
       default:
         return colors;
     }
-  };
+  }, [theme, houseColors, colors]);
 
-  const getIntensitySettings = () => {
+  const getIntensitySettings = useCallback(() => {
     switch (intensity) {
       case 'light':
         return { speed: 0.5, size: 2, opacity: 0.3 };
@@ -52,7 +64,7 @@ const MagicalParticles: React.FC<MagicalParticlesProps> = ({
       default:
         return { speed: 1, size: 3, opacity: 0.5 };
     }
-  };
+  }, [intensity]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -166,7 +178,7 @@ const MagicalParticles: React.FC<MagicalParticlesProps> = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [count, colors, theme, intensity, houseColors]);
+  }, [count, colors, theme, intensity, houseColors, getThemeColors, getIntensitySettings]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0">

@@ -1,7 +1,10 @@
+'use client';
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Wand2, Sparkles, BookOpen, Castle, Star } from 'lucide-react';
+import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from '@clerk/clerk-react';
 import { User } from '../types';
 import SortingHat from './SortingHat';
 import MagicalParticles from './MagicalParticles';
@@ -195,67 +198,101 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterAcademy }) => {
 
         <AnimatePresence>
           {!showNameInput && !showSortingHat && (
-            <motion.button
+            <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -100, opacity: 0 }}
               transition={{ delay: 2, duration: 0.8 }}
-              onClick={handleBeginJourney}
-              onMouseEnter={() => soundLibrary.play('hover')}
-              className="group relative px-12 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full text-white font-bold text-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 border-2 border-amber-400/30"
-              whileHover={{ 
-                boxShadow: '0 0 40px rgba(147, 51, 234, 0.6), 0 0 80px rgba(251, 191, 36, 0.3)',
-                y: -8,
-                borderColor: 'rgba(251, 191, 36, 0.8)'
-              }}
-              whileTap={{ scale: 0.95 }}
+              className="flex flex-col items-center gap-4"
             >
-              <span className="relative z-10 flex items-center gap-3">
-                <BookOpen className="w-6 h-6" />
-                Enter Hogwarts Academy
-                <Wand2 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-              </span>
+              <SignedOut>
+                <div className="flex gap-4">
+                  <SignInButton mode="modal">
+                    <motion.button
+                      onMouseEnter={() => soundLibrary.play('hover')}
+                      className="group relative px-8 py-3 bg-gradient-to-r from-gray-600 via-gray-700 to-gray-600 rounded-full text-white font-bold text-lg shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-105 border-2 border-gray-400/30"
+                      whileHover={{ 
+                        boxShadow: '0 0 40px rgba(75, 85, 99, 0.6)',
+                        y: -4,
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        <Wand2 className="w-5 h-5" />
+                        Sign In
+                      </span>
+                    </motion.button>
+                  </SignInButton>
+                  
+                  <SignUpButton mode="modal">
+                    <motion.button
+                      onMouseEnter={() => soundLibrary.play('hover')}
+                      className="group relative px-12 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full text-white font-bold text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 border-2 border-amber-400/30"
+                      whileHover={{ 
+                        boxShadow: '0 0 40px rgba(147, 51, 234, 0.6), 0 0 80px rgba(251, 191, 36, 0.3)',
+                        y: -4,
+                        borderColor: 'rgba(251, 191, 36, 0.8)'
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="relative z-10 flex items-center gap-3">
+                        <BookOpen className="w-6 h-6" />
+                        Enter SpellAcademia
+                        <Sparkles className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                      </span>
+                      
+                      {/* Magical glow effect */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-400/20 opacity-0 group-hover:opacity-100"
+                        animate={{ 
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 180, 360]
+                        }}
+                        transition={{ 
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                      />
+                    </motion.button>
+                  </SignUpButton>
+                </div>
+              </SignedOut>
               
-              {/* Magical glow effect */}
-              <motion.div
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-400/20 opacity-0 group-hover:opacity-100"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{ 
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-              />
-              
-              {/* Sparkle effects */}
-              <motion.div
-                className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full opacity-0 group-hover:opacity-100"
-                animate={{
-                  scale: [0, 1, 0],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: 0.2
-                }}
-              />
-              <motion.div
-                className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-purple-300 rounded-full opacity-0 group-hover:opacity-100"
-                animate={{
-                  scale: [0, 1, 0],
-                  rotate: [0, -180, -360]
-                }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: 0.5
-                }}
-              />
-            </motion.button>
+              <SignedIn>
+                <motion.button
+                  onMouseEnter={() => soundLibrary.play('hover')}
+                  onClick={handleBeginJourney}
+                  className="group relative px-12 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full text-white font-bold text-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 border-2 border-amber-400/30"
+                  whileHover={{ 
+                    boxShadow: '0 0 40px rgba(147, 51, 234, 0.6), 0 0 80px rgba(251, 191, 36, 0.3)',
+                    y: -8,
+                    borderColor: 'rgba(251, 191, 36, 0.8)'
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="relative z-10 flex items-center gap-3">
+                    <BookOpen className="w-6 h-6" />
+                    Continue Your Journey
+                    <Wand2 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                  </span>
+                  
+                  {/* Magical glow effect */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-400/20 opacity-0 group-hover:opacity-100"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 180, 360]
+                    }}
+                    transition={{ 
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                </motion.button>
+              </SignedIn>
+            </motion.div>
           )}
 
           {showNameInput && !showSortingHat && (

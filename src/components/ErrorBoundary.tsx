@@ -3,6 +3,7 @@ import React from 'react';
 interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 interface ErrorBoundaryProps {
@@ -16,11 +17,28 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    // Update state so the next render will show the fallback UI
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log the error but don't let it crash the app
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // Special handling for audio-related errors
+    if (error.message?.includes('atob') || 
+        error.message?.includes('InvalidCharacterError') ||
+        error.message?.includes('loadBuffer')) {
+      console.warn('Audio error detected, continuing without sound');
+      
+      // Try to recover from audio errors
+      setTimeout(() => {
+        this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+      }, 1000);
+      return;
+    }
+    
+    this.setState({ errorInfo });
   }
 
   render() {

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,11 +17,11 @@ import {
   Building
 } from 'lucide-react';
 import { enhancedSoundLibrary } from './SoundManager';
-import { User, Location, JourneyStep } from '../types';
+import { User, Location, JourneyStep, SpellProgress } from '../types';
 
 interface JourneyProps {
   user: User;
-  userProgress: any[];
+  userProgress: SpellProgress[];
 }
 
 // Journey steps data
