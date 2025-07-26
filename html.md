@@ -129,4 +129,3 @@ These are generic, non-semantic container elements primarily used to group other
     (Note: The `style` attribute is used here for a quick demonstration; in practice, styling is best done using external CSS files.)
 
 -----
-

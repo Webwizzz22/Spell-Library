@@ -1,15 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SpellAcademia - Harry Potter Learning Platform</title>
+    <title>SpellAcademia - Architecture Ready</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460);
+        color: white;
+        min-height: 100vh;
+      }
+      
+      * {
+        box-sizing: border-box;
+      }
+      
+      code {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 14px;
+      }
+    </style>
   </head>
   <body>
-    <!-- Debug script for troubleshooting -->
-    <script src="/debug.js"></script>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
